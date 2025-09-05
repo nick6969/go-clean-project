@@ -9,50 +9,50 @@ import (
 	"github.com/nick6969/go-clean-project/internal/config"
 )
 
-type slogger struct {
+type Slogger struct {
 	logger *slog.Logger
 	ctx    context.Context
 }
 
-func NewSLogger(ctx context.Context, cfg config.LoggerConfig) Logger {
-	return &slogger{
+func NewSLogger(ctx context.Context, cfg config.LoggerConfig) *Slogger {
+	return &Slogger{
 		logger: slog.New(getHandler(cfg)),
 		ctx:    ctx,
 	}
 }
 
-func (l *slogger) With(ctx context.Context) Logger {
+func (l *Slogger) With(ctx context.Context) Logger {
 	attrs := extractSlogAttributes(ctx)
-	return &slogger{
+	return &Slogger{
 		logger: l.logger.With(attrs...),
 		ctx:    ctx,
 	}
 }
 
-func (l *slogger) WithAdditionalFields(fields map[string]any) Logger {
-	return &slogger{
+func (l *Slogger) WithAdditionalFields(fields map[string]any) Logger {
+	return &Slogger{
 		logger: l.logger.With(l.getAttrs(fields, nil)...),
 		ctx:    l.ctx,
 	}
 }
 
-func (l *slogger) Debug(ctx context.Context, msg string, args ...any) {
+func (l *Slogger) Debug(ctx context.Context, msg string, args ...any) {
 	l.logger.DebugContext(ctx, msg, args...)
 }
 
-func (l *slogger) Info(ctx context.Context, msg string, args ...any) {
+func (l *Slogger) Info(ctx context.Context, msg string, args ...any) {
 	l.logger.InfoContext(ctx, msg, args...)
 }
 
-func (l *slogger) Warn(ctx context.Context, msg string, args ...any) {
+func (l *Slogger) Warn(ctx context.Context, msg string, args ...any) {
 	l.logger.WarnContext(ctx, msg, args...)
 }
 
-func (l *slogger) Error(ctx context.Context, msg string, args ...any) {
+func (l *Slogger) Error(ctx context.Context, msg string, args ...any) {
 	l.logger.ErrorContext(ctx, msg, args...)
 }
 
-func (l *slogger) getAttrs(fields map[string]any, err error) []any {
+func (l *Slogger) getAttrs(fields map[string]any, err error) []any {
 	var attrs []any
 	for k, v := range fields {
 		attrs = append(attrs, slog.Any(k, v))
