@@ -2,6 +2,7 @@ package register
 
 import (
 	"context"
+	"errors"
 )
 
 type repository interface {
@@ -44,7 +45,31 @@ type Output struct {
 }
 
 func (u *UseCase) Execute(ctx context.Context, input Input) (*Output, error) {
-	// 業務邏輯處理
-	// 與 repository 或 service 互動
-	return &Output{}, nil
+	isExists, err := u.repository.CheckEmailIsExists(input.email)
+	if err != nil {
+		return nil, err
+	}
+
+	if isExists {
+		return nil, errors.New("email is already registered")
+	}
+
+	hashedPassword, err := u.password.Hash(input.password)
+	if err != nil {
+		return nil, err
+	}
+
+	userID, err := u.repository.CreateUser(input.email, hashedPassword)
+	if err != nil {
+		return nil, err
+	}
+
+	accessToken, err := u.token.GenerateAccessToken(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Output{
+		AccessToken: accessToken,
+	}, nil
 }
