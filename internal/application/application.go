@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/nick6969/go-clean-project/internal/config"
 	"github.com/nick6969/go-clean-project/internal/logger"
@@ -24,7 +25,12 @@ func New(cfg *config.Config) (*Application, error) {
 		Logger: logger,
 	}
 
-	app.Service = NewService(app)
+	service, err := NewService(app)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create services: %w", err)
+	}
+	app.Service = service
+
 	app.UseCase = NewUseCase(app)
 	return app, nil
 }

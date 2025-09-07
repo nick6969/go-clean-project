@@ -2,6 +2,8 @@ package config
 
 import (
 	"fmt"
+	"regexp"
+	"strings"
 
 	"github.com/spf13/viper"
 )
@@ -43,10 +45,30 @@ func LoadConfig() (*Config, error) {
 	cfg.Logger.Level = v.GetString("LOGGER_LEVEL")
 	cfg.Logger.Format = v.GetString("LOGGER_FORMAT")
 
-	cfg.Token.Secret = v.GetString("TOKEN_SECRET")
+	tokenSecret := v.GetString("TOKEN_SECRET")
+	if tokenSecret == "" {
+		return nil, fmt.Errorf("TOKEN_SECRET is required")
+	}
+	cfg.Token.Secret = replaceEscape(tokenSecret)
 
 	cfg.APIDocAuth.UserName = v.GetString("API_DOC_AUTH_USERNAME")
 	cfg.APIDocAuth.Password = v.GetString("API_DOC_AUTH_PASSWORD")
 
 	return &cfg, nil
+}
+
+func replaceEscape(value string) string {
+	escapeRegex := regexp.MustCompile(`\\.`)
+	newValue := escapeRegex.ReplaceAllStringFunc(value, func(match string) string {
+		c := strings.TrimPrefix(match, `\`)
+		switch c {
+		case "n":
+			return "\n"
+		case "r":
+			return "\r"
+		default:
+			return match
+		}
+	})
+	return newValue
 }
