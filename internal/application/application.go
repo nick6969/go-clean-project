@@ -11,6 +11,7 @@ type Application struct {
 	Config *config.Config
 	Logger *logger.Slogger
 
+	Service *Service
 	UseCase *UseCase
 }
 
@@ -23,6 +24,7 @@ func New(cfg *config.Config) (*Application, error) {
 		Logger: logger,
 	}
 
+	app.Service = NewService(app)
 	app.UseCase = NewUseCase(app)
 	return app, nil
 }
