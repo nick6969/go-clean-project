@@ -22,6 +22,10 @@ type DatabaseConfig struct {
 	Database string
 }
 
+func (db *DatabaseConfig) DSN() string {
+	return db.User + ":" + db.Password + "@tcp(" + db.Host + ":" + db.Port + ")/" + db.Database + "?parseTime=true"
+}
+
 type RedisConfig struct {
 	Host     string
 	Port     string

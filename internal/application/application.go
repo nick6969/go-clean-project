@@ -5,12 +5,14 @@ import (
 	"fmt"
 
 	"github.com/nick6969/go-clean-project/internal/config"
+	"github.com/nick6969/go-clean-project/internal/database/mysql"
 	"github.com/nick6969/go-clean-project/internal/logger"
 )
 
 type Application struct {
-	Config *config.Config
-	Logger *logger.Slogger
+	Config   *config.Config
+	Logger   *logger.Slogger
+	Database *mysql.Database
 
 	Service *Service
 	UseCase *UseCase
@@ -19,10 +21,15 @@ type Application struct {
 func New(cfg *config.Config) (*Application, error) {
 	ctx := context.Background()
 	logger := logger.NewSLogger(ctx, cfg.Logger)
+	database, err := mysql.InitDatabase(cfg.MySQL.DSN(), logger.GetDatabaseLogger())
+	if err != nil {
+		return nil, err
+	}
 
 	app := &Application{
-		Config: cfg,
-		Logger: logger,
+		Config:   cfg,
+		Logger:   logger,
+		Database: database,
 	}
 
 	service, err := NewService(app)

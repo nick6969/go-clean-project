@@ -6,8 +6,8 @@ import (
 )
 
 type repository interface {
-	CheckEmailIsExists(email string) (bool, error)
-	CreateUser(email, hashedPassword string) (int, error)
+	CheckEmailIsExists(ctx context.Context, email string) (bool, error)
+	CreateUser(ctx context.Context, email, hashedPassword string) (int, error)
 }
 
 type password interface {
@@ -45,7 +45,7 @@ type Output struct {
 }
 
 func (u *UseCase) Execute(ctx context.Context, input Input) (*Output, error) {
-	isExists, err := u.repository.CheckEmailIsExists(input.email)
+	isExists, err := u.repository.CheckEmailIsExists(ctx, input.email)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +59,7 @@ func (u *UseCase) Execute(ctx context.Context, input Input) (*Output, error) {
 		return nil, err
 	}
 
-	userID, err := u.repository.CreateUser(input.email, hashedPassword)
+	userID, err := u.repository.CreateUser(ctx, input.email, hashedPassword)
 	if err != nil {
 		return nil, err
 	}

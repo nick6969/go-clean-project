@@ -21,6 +21,10 @@ func NewSLogger(ctx context.Context, cfg config.LoggerConfig) *Slogger {
 	}
 }
 
+func (l *Slogger) GetDatabaseLogger() *slog.Logger {
+	return l.logger.With("component", "database")
+}
+
 func (l *Slogger) With(ctx context.Context) Logger {
 	attrs := extractSlogAttributes(ctx)
 	return &Slogger{
