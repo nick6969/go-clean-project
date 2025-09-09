@@ -29,6 +29,11 @@ func main() {
 		log.Fatalf("Failed to create server: %v", err)
 	}
 
+	err = app.Database.MigrateUp()
+	if err != nil {
+		log.Fatalf("failed to run migrations: %v", err)
+	}
+
 	server.Start()
 
 	systemShutdownHandle()
