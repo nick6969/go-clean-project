@@ -1,8 +1,6 @@
 package mysql
 
 import (
-	"context"
-	"errors"
 	"log/slog"
 	"time"
 
@@ -54,14 +52,4 @@ func connectDB(dsn string, maxOpenConns, maxIdleConns int, maxLiftTime time.Dura
 	sql.SetConnMaxLifetime(maxLiftTime)
 
 	return database, nil
-}
-
-func (d *Database) CheckEmailIsExists(ctx context.Context, email string) (bool, error) {
-	// TODO: - implement this function
-	return false, errors.New("not implemented")
-}
-
-func (d *Database) CreateUser(ctx context.Context, email, hashedPassword string) (int, error) {
-	// TODO: - implement this function
-	return 0, errors.New("not implemented")
 }
