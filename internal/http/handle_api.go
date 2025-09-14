@@ -13,4 +13,5 @@ func registerAPIRoutes(r gin.IRouter, app *application.Application) {
 func registerAPIUserRoutes(r gin.IRouter, app *application.Application) {
 	uc := controller.NewUserController()
 	r.POST("register", uc.Register(app.UseCase.User.Register))
+	r.POST("login", uc.Login(app.UseCase.User.Login))
 }
