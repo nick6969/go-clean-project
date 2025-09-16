@@ -36,11 +36,22 @@ help: ## Show this help message
 # Development
 # ==============================================================================
 
-.PHONY: run
+.PHONY: run dockerUp dockerDown dockerDownClean dockerLogs
 
 run: ## Run the application
 	@go run ./cmd/api/main.go
 
+dockerUp: ## 啟動並建置 Docker 容器
+	docker compose up -d --build
+
+dockerDown: ## 停止並移除 Docker 容器
+	docker compose down
+
+dockerDownClean: ## 停止並移除 Docker 容器和具名儲存卷
+	docker compose down -v
+
+dockerLogs: ## 查看 app 服務的日誌
+	docker compose logs -f app
 
 # ==============================================================================
 # Database
