@@ -12,6 +12,20 @@ import (
 	"github.com/nick6969/go-clean-project/internal/http"
 )
 
+//	@title					Go Clean Architecture API
+//	@version				0.0.1
+//	@description 		This is Go Clean Architecture API
+//	@termsOfService
+//	@host 					go-clean-architecture.xxxx.com
+
+//	@securityDefinitions.apikey Bearer
+//	@in header
+//	@name Authorization
+//	@description Type "Bearer" followed by a space and JWT token.
+
+//	@BasePath	/
+//	@schemes	https
+
 func main() {
 	config, err := config.LoadConfig()
 	if err != nil {

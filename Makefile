@@ -15,6 +15,7 @@ include .env
 pes_parent_dir:=$(shell pwd)/$(lastword $(MAKEFILE_LIST))
 pes_parent_dir:=$(shell dirname $(pes_parent_dir))
 DockerImageNameMigrate='migrate/migrate:v4.19.0'
+DockerImageNameSwaggerGenerate='ghcr.io/swaggo/swag:v1.16.6'
 MigrationFilePath=$(pes_parent_dir)/deployments/migrations
 LocalDatabase='mysql://$(MYSQL_USER):$(MYSQL_PASSWORD)@tcp($(MYSQL_HOST):$(MYSQL_PORT))/$(MYSQL_DATABASE)'
 
@@ -52,6 +53,16 @@ dockerDownClean: ## 停止並移除 Docker 容器和具名儲存卷
 
 dockerLogs: ## 查看 app 服務的日誌
 	docker compose logs -f app
+
+## ==============================================================================
+# Swagger
+# ==============================================================================
+
+.PHONY: swaggerGenerateDoc
+
+swaggerGenerateDoc: ## Generate API Swagger documentation
+	@docker run --rm -v $(pes_parent_dir):/code ${DockerImageNameSwaggerGenerate} init -o ./docs/api --ot json -g cmd/api/main.go -t !z
+
 
 # ==============================================================================
 # Database

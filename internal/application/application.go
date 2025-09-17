@@ -2,8 +2,10 @@ package application
 
 import (
 	"context"
+	"embed"
 	"fmt"
 
+	"github.com/nick6969/go-clean-project/docs/api"
 	"github.com/nick6969/go-clean-project/internal/config"
 	"github.com/nick6969/go-clean-project/internal/database/mysql"
 	"github.com/nick6969/go-clean-project/internal/logger"
@@ -11,6 +13,7 @@ import (
 
 type Application struct {
 	Config   *config.Config
+	Embed    Embeds
 	Logger   *logger.Slogger
 	Database *mysql.Database
 
@@ -27,7 +30,10 @@ func New(cfg *config.Config) (*Application, error) {
 	}
 
 	app := &Application{
-		Config:   cfg,
+		Config: cfg,
+		Embed: Embeds{
+			APIDoc: api.FS,
+		},
 		Logger:   logger,
 		Database: database,
 	}
@@ -40,4 +46,8 @@ func New(cfg *config.Config) (*Application, error) {
 
 	app.UseCase = NewUseCase(app)
 	return app, nil
+}
+
+type Embeds struct {
+	APIDoc embed.FS
 }
