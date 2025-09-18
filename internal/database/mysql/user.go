@@ -41,5 +41,25 @@ func (d *Database) FindUserByEmail(ctx context.Context, email string) (*domain.D
 		return nil, err
 	}
 
-	return domain.NewDBUserModel(user.ID, user.Email, user.Password), nil
+	return user.ToDomain()
+}
+
+func (d *Database) FindUserByID(ctx context.Context, userID int) (*domain.DBUserModel, error) {
+	var user entity.User
+	err := d.db.WithContext(ctx).
+		Model(&entity.User{}).
+		Where("id = ?", userID).
+		First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return user.ToDomain()
+}
+
+func (d *Database) UpdateUserPassword(ctx context.Context, user *domain.DBUserModel) error {
+	return d.db.WithContext(ctx).
+		Model(&entity.User{}).
+		Where("id = ?", user.ID).
+		Update("password", user.PasswordHash()).Error
 }
