@@ -1,14 +1,14 @@
 package middleware
 
 import (
-	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/nick6969/go-clean-project/internal/domain"
 )
 
 type AuthToken interface {
-	ValidateAccessToken(token string) (int, error)
+	ValidateAccessToken(token string) (int, *domain.GPError)
 }
 
 type Auth struct {
@@ -26,14 +26,14 @@ func (a *Auth) Execute() gin.HandlerFunc {
 		// 從 Header 中取得 token
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is missing"})
+			c.Error(domain.NewGPError(domain.ErrCodeUnauthorized).Append("Authorization header is missing"))
 			return
 		}
 
 		// 假設 token 格式為 "Bearer {token}"
 		parts := strings.Split(authHeader, " ")
 		if len(parts) != 2 || parts[0] != "Bearer" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Authorization header format must be Bearer {token}"})
+			c.Error(domain.NewGPError(domain.ErrCodeUnauthorized).Append("Authorization header format must be Bearer {token}"))
 			return
 		}
 
@@ -42,7 +42,7 @@ func (a *Auth) Execute() gin.HandlerFunc {
 		// 驗證 token
 		userID, err := a.token.ValidateAccessToken(token)
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			c.Error(domain.NewGPError(domain.ErrCodeUnauthorized).Append("Invalid token"))
 			return
 		}
 

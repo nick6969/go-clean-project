@@ -2,19 +2,18 @@ package changePassword
 
 import (
 	"context"
-	"errors"
 
 	"github.com/nick6969/go-clean-project/internal/domain"
 )
 
 type repository interface {
-	FindUserByID(ctx context.Context, userID int) (*domain.DBUserModel, error)
-	UpdateUserPassword(ctx context.Context, user *domain.DBUserModel) error
+	FindUserByID(ctx context.Context, userID int) (*domain.DBUserModel, *domain.GPError)
+	UpdateUserPassword(ctx context.Context, user *domain.DBUserModel) *domain.GPError
 }
 
 type password interface {
-	Compare(hashed, password string) error
-	Hash(password string) (string, error)
+	Compare(hashed, password string) *domain.GPError
+	Hash(password string) (string, *domain.GPError)
 }
 
 type UseCase struct {
@@ -40,31 +39,31 @@ func NewInput(userID int, oldPassword string, newPassword string) Input {
 	}
 }
 
-func (u *UseCase) Execute(ctx context.Context, input Input) error {
+func (u *UseCase) Execute(ctx context.Context, input Input) *domain.GPError {
 	user, err := u.repository.FindUserByID(ctx, input.userID)
 	if err != nil {
-		return err
+		return err.Append("failed to find user by id")
 	}
 
 	if user == nil {
-		return errors.New("user not found")
+		return domain.NewGPError(domain.ErrCodeUserNotFound)
 	}
 
 	if err := u.password.Compare(user.PasswordHash(), input.oldPassword); err != nil {
-		return errors.New("invalid old password")
+		return err.Append("change password failed")
 	}
 
 	hashedPassword, err := u.password.Hash(input.newPassword)
 	if err != nil {
-		return err
+		return err.Append("change password failed")
 	}
 
 	if err := user.ChangePassword(hashedPassword); err != nil {
-		return err
+		return domain.NewGPError(domain.ErrCodeParametersNotCorrect).Append("change password failed")
 	}
 
 	if err := u.repository.UpdateUserPassword(ctx, user); err != nil {
-		return err
+		return err.Append("change password failed")
 	}
 
 	return nil

@@ -18,8 +18,12 @@ func (User) TableName() string {
 	return "users"
 }
 
-func (u *User) ToDomain() (*domain.DBUserModel, error) {
-	return domain.NewDBUserModel(u.ID, u.Email, u.Password, u.CreatedAt, u.UpdatedAt)
+func (u *User) ToDomain() (*domain.DBUserModel, *domain.GPError) {
+	user, err := domain.NewDBUserModel(u.ID, u.Email, u.Password, u.CreatedAt, u.UpdatedAt)
+	if err != nil {
+		return nil, domain.NewGPErrorWithError(domain.ErrCodeModelConvertError, err).Append("failed to convert User entity to DBUserModel")
+	}
+	return user, nil
 }
 
 func NewUserFromDomain(m *domain.DBUserModel) *User {
