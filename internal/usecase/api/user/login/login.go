@@ -6,6 +6,8 @@ import (
 	"github.com/nick6969/go-clean-project/internal/domain"
 )
 
+//go:generate mockgen -source=login.go -destination=./login_mock_test.go -package=login
+
 type repository interface {
 	FindUserByEmail(ctx context.Context, email string) (*domain.DBUserModel, *domain.GPError)
 }

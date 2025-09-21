@@ -18,6 +18,8 @@ DockerImageNameMigrate='migrate/migrate:v4.19.0'
 DockerImageNameSwaggerGenerate='ghcr.io/swaggo/swag:v1.16.6'
 MigrationFilePath=$(pes_parent_dir)/deployments/migrations
 LocalDatabase='mysql://$(MYSQL_USER):$(MYSQL_PASSWORD)@tcp($(MYSQL_HOST):$(MYSQL_PORT))/$(MYSQL_DATABASE)'
+TestConvertFileDir=$(pes_parent_dir)/test
+TestConvertFilePath=$(pes_parent_dir)/test/test-cover.txt
 
 
 # ==============================================================================
@@ -93,3 +95,24 @@ databaseMigrateRollback: ## Rollback database by one version
 
 genJWTSecretToEnv: ## Generate a new JWT secret key and append it to the .env file
 	@openssl ecparam -genkey -name secp521r1 -noout | tee -a | awk '{printf "%s""\\n",$$0}' | rev | cut -c3- | rev | awk '{printf "\nTOKEN_SECRET=\"%s\"\n",$$0}' >> .env
+
+
+# ==============================================================================
+# Test
+# ==============================================================================
+
+.PHONY: buildMock unitTest showCodeCoverage showTestFailure
+buildMock: ## Build mock files
+	@go generate ./...
+
+unitTest: ## Run unit tests and show coverage
+	@if ! [ -d "$(TestConvertFileDir)" ]; then mkdir $(TestConvertFileDir); fi
+	@go test ./... -count=1 -coverprofile=$(TestConvertFilePath) && make showCodeCoverage || make showTestFailure
+
+showCodeCoverage:
+	@echo "\033[31m\033[1m"
+	@go tool cover -func=$(TestConvertFilePath) | tail -n 1 | awk '{print $$3}' | xargs echo "Test Coverage:"
+	@echo "\033[0m"
+
+showTestFailure:
+	@echo "\033[1;33;41m\033[1m🥶🥶🥶🥶 Test Failure 🥶🥶🥶🥶\033[0m"
