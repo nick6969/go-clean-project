@@ -12,13 +12,102 @@
     "host": "go-clean-architecture.xxxx.com",
     "basePath": "/",
     "paths": {
-        "/api/user/register": {
+        "/api/user/change-password": {
             "post": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
+                "description": "Change User Password",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Change Password",
+                "parameters": [
+                    {
+                        "description": "Change Password Info",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.ChangePassword"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.generalErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.generalErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/login": {
+            "post": {
+                "description": "User Login",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Login",
+                "parameters": [
+                    {
+                        "description": "User Login Info",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.Login"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/login.Output"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.generalErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.generalErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/register": {
+            "post": {
                 "description": "User Registration",
                 "consumes": [
                     "application/json"
@@ -43,39 +132,21 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Returns access token",
+                        "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/controller.GeneralSuccessResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/register.Output"
                         }
                     },
                     "400": {
-                        "description": "Bad Request - Invalid input data",
+                        "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/controller.GeneralErrorResponse"
-                        }
-                    },
-                    "409": {
-                        "description": "Conflict - Email already registered",
-                        "schema": {
-                            "$ref": "#/definitions/controller.GeneralErrorResponse"
+                            "$ref": "#/definitions/controller.generalErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/controller.GeneralErrorResponse"
+                            "$ref": "#/definitions/controller.generalErrorResponse"
                         }
                     }
                 }
@@ -83,18 +154,75 @@
         }
     },
     "definitions": {
-        "controller.GeneralErrorResponse": {
+        "controller.generalErrorResponse": {
             "type": "object",
             "properties": {
-                "error": {
+                "code": {
+                    "description": "Error code",
+                    "type": "integer",
+                    "example": 400000
+                },
+                "message": {
+                    "description": "Error message",
+                    "type": "string",
+                    "example": "Parameters Not Correct"
+                }
+            }
+        },
+        "login.Output": {
+            "type": "object",
+            "properties": {
+                "accessToken": {
                     "type": "string"
                 }
             }
         },
-        "controller.GeneralSuccessResponse": {
+        "register.Output": {
             "type": "object",
             "properties": {
-                "data": {}
+                "accessToken": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.ChangePassword": {
+            "type": "object",
+            "required": [
+                "new_password",
+                "password"
+            ],
+            "properties": {
+                "new_password": {
+                    "type": "string",
+                    "maxLength": 32,
+                    "minLength": 8,
+                    "example": "N3wP@ssw0rd!"
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 32,
+                    "minLength": 8,
+                    "example": "P@ssw0rd!"
+                }
+            }
+        },
+        "request.Login": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "user@example.com"
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 32,
+                    "minLength": 8,
+                    "example": "P@ssw0rd!"
+                }
             }
         },
         "request.Register": {

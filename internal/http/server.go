@@ -27,7 +27,7 @@ func NewServer(app *application.Application) (*Server, error) {
 	engine.Use(gin.Recovery())
 	engine.Use(middleware.NewRequestLogger(app.Logger).Execute())
 	engine.Use(middleware.NewInjectLogger(app.Logger).Execute())
-	engine.Use(middleware.NewErrorHandler(app.Logger).Execute())
+	engine.Use(middleware.NewErrorHandler().Execute())
 
 	registerRoutes(engine, app)
 

@@ -58,3 +58,7 @@ func (e *GPError) Message() string {
 
 	return e.code.Message()
 }
+
+func (e *GPError) ErrorCode() GPErrorCode {
+	return e.code
+}

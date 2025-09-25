@@ -9,13 +9,10 @@ import (
 )
 
 type ErrorHandler struct {
-	logger logger.Logger
 }
 
-func NewErrorHandler(logger logger.Logger) *ErrorHandler {
-	return &ErrorHandler{
-		logger: logger,
-	}
+func NewErrorHandler() *ErrorHandler {
+	return &ErrorHandler{}
 }
 
 func (h *ErrorHandler) Execute() gin.HandlerFunc {
@@ -26,22 +23,33 @@ func (h *ErrorHandler) Execute() gin.HandlerFunc {
 			return
 		}
 
+		loggerInstance, exists := c.Get("logger")
+		if !exists {
+			// 如果沒有 logger，無法記錄錯誤
+			// 這會是程式邏輯錯誤，應該要確保每個請求都有 logger
+			return
+		}
+
+		l, ok := loggerInstance.(logger.Logger)
+		if !ok {
+			// 如果 logger 類型不正確，無法記錄錯誤
+			// 這會是程式邏輯錯誤，應該要確保 logger 類型正確
+			return
+		}
+
 		// 取得最後一個錯誤
 		err := c.Errors.Last().Err
 
 		// 這裡假設 err 是 domain.GPError 類型
 		if gpErr, ok := err.(domain.GPError); ok {
-			c.JSON(gpErr.HttpStatusCode(), gin.H{"error": gpErr.Message()})
 			if gpErr.HttpStatusCode() == http.StatusInternalServerError {
-				h.logger.Warn(c, "internal server error", gpErr)
+				l.Warn(c, "internal server error", gpErr)
 			} else {
-				h.logger.Error(c, "client error", gpErr)
+				l.Error(c, "client error", gpErr)
 			}
 			return
 		}
 
-		h.logger.Error(c, "request error", err)
-
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		l.Error(c, "request error", err)
 	}
 }

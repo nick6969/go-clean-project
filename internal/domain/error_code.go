@@ -29,7 +29,13 @@ func (code GPErrorCode) Message() string {
 	case ErrCodeInvalidPassword:
 		return "Invalid Password"
 
-	case ErrCodeInternalServer:
+	case ErrCodeUserEmailExists:
+		return "User Email Already Exists"
+
+	case ErrCodeUnauthorized:
+		return "Unauthorized"
+
+	case ErrCodeInternalServer, ErrCodeDatabaseError, ErrCodeModelConvertError:
 		return "Internal Server Error"
 
 	default:
