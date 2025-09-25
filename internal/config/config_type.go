@@ -1,5 +1,7 @@
 package config
 
+import "fmt"
+
 type Config struct {
 	Server     ServerConfig
 	MySQL      DatabaseConfig
@@ -30,6 +32,10 @@ type RedisConfig struct {
 	Host     string
 	Port     string
 	Password string
+}
+
+func (r *RedisConfig) Address() string {
+	return fmt.Sprintf("%s:%s", r.Host, r.Port)
 }
 
 type LoggerConfig struct {

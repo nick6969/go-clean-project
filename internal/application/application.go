@@ -8,6 +8,7 @@ import (
 	"github.com/nick6969/go-clean-project/docs/api"
 	"github.com/nick6969/go-clean-project/internal/config"
 	"github.com/nick6969/go-clean-project/internal/database/mysql"
+	"github.com/nick6969/go-clean-project/internal/database/redis"
 	"github.com/nick6969/go-clean-project/internal/logger"
 )
 
@@ -16,6 +17,7 @@ type Application struct {
 	Embed    Embeds
 	Logger   *logger.Slogger
 	Database *mysql.Database
+	Redis    *redis.Client
 
 	Service *Service
 	UseCase *UseCase
@@ -29,6 +31,11 @@ func New(cfg *config.Config) (*Application, error) {
 		return nil, err
 	}
 
+	redisClient, err := redis.NewClient(ctx, cfg.Redis)
+	if err != nil {
+		return nil, err
+	}
+
 	app := &Application{
 		Config: cfg,
 		Embed: Embeds{
@@ -36,6 +43,7 @@ func New(cfg *config.Config) (*Application, error) {
 		},
 		Logger:   logger,
 		Database: database,
+		Redis:    redisClient,
 	}
 
 	service, err := NewService(app)
