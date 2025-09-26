@@ -1,7 +1,11 @@
 package application
 
 import (
+	"github.com/nick6969/go-clean-project/internal/domain"
+	"github.com/nick6969/go-clean-project/internal/listener"
 	"github.com/nick6969/go-clean-project/internal/service/cache"
+	"github.com/nick6969/go-clean-project/internal/service/dispatcher"
+	"github.com/nick6969/go-clean-project/internal/service/email"
 	nxcache "github.com/nick6969/go-clean-project/internal/service/nx_cache"
 	"github.com/nick6969/go-clean-project/internal/service/password"
 	"github.com/nick6969/go-clean-project/internal/service/sfnx"
@@ -16,6 +20,8 @@ type Service struct {
 	Cache        *cache.Service
 	NxCache      *nxcache.Service
 	Sfnx         *sfnx.Service
+	Email        *email.Service
+	Dispatch     *dispatcher.Service
 }
 
 func NewService(app *Application) (*Service, error) {
@@ -33,6 +39,12 @@ func NewService(app *Application) (*Service, error) {
 
 	sfnxService := sfnx.NewService(nxCacheService)
 
+	emailService := email.NewService()
+
+	dispatcherService := dispatcher.NewService(app.Logger)
+
+	dispatcherService.RegisterListener(domain.EventUserRegistered, listener.NewWelcomeEmail(emailService))
+
 	return &Service{
 		Password:     passwordService,
 		Token:        tokenService,
@@ -40,5 +52,7 @@ func NewService(app *Application) (*Service, error) {
 		Cache:        cacheService,
 		NxCache:      nxCacheService,
 		Sfnx:         sfnxService,
+		Email:        emailService,
+		Dispatch:     dispatcherService,
 	}, nil
 }

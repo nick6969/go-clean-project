@@ -24,7 +24,7 @@ type UserUseCase struct {
 
 func NewUserUseCase(app *Application) *UserUseCase {
 	return &UserUseCase{
-		Register:       register.NewUseCase(app.Database, app.Service.Password, app.Service.Token),
+		Register:       register.NewUseCase(app.Database, app.Service.Password, app.Service.Token, app.Service.Dispatch),
 		Login:          login.NewUseCase(app.Database, app.Service.Password, app.Service.Token),
 		ChangePassword: changePassword.NewUseCase(app.Database, app.Service.Password),
 	}

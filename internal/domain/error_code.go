@@ -16,6 +16,8 @@ const (
 
 	ErrCodeDatabaseError     GPErrorCode = 501000
 	ErrCodeModelConvertError GPErrorCode = 501001
+
+	ErrCodeDispatcherError GPErrorCode = 600000
 )
 
 func (code GPErrorCode) Message() string {
@@ -35,7 +37,7 @@ func (code GPErrorCode) Message() string {
 	case ErrCodeUnauthorized:
 		return "Unauthorized"
 
-	case ErrCodeInternalServer, ErrCodeDatabaseError, ErrCodeModelConvertError:
+	case ErrCodeInternalServer, ErrCodeDatabaseError, ErrCodeModelConvertError, ErrCodeDispatcherError:
 		return "Internal Server Error"
 
 	default:
