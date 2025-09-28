@@ -26,10 +26,17 @@ FROM alpine:3.21.2
 # 設定工作目錄
 WORKDIR /app
 
+# 創建非 root 用戶
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
 # 從 builder stage 複製已編譯的二進位檔
-COPY --from=builder /app/bin/server .
+COPY --from=builder --chown=appuser:appgroup /app/bin/server .
 
 # 複製任何必要的靜態檔案(例如資料庫遷移檔案)
-COPY --from=builder /app/deployments/migrations /app/deployments/migrations
+COPY --from=builder --chown=appuser:appgroup /app/deployments/migrations /app/deployments/migrations
 
+# 切換到非 root 用戶
+USER appuser
+
+# 設定容器啟動時執行的命令
 ENTRYPOINT ["./server"]

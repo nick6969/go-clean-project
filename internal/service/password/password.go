@@ -7,8 +7,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type Service struct {
-}
+type Service struct{}
 
 func NewService() *Service {
 	return &Service{}

@@ -48,6 +48,7 @@ func apiFailWithGPError(ctx *gin.Context, err *domain.GPError) {
 		Message: err.Message(),
 	})
 	// 把錯誤記錄到 Gin 的 context 中，讓 ErrorHandler middleware 可以記錄
+	//nolint:errcheck // 流程上只要傳進去的 error 不為 nil 就不會回傳 err
 	ctx.Error(err)
 }
 

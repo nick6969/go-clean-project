@@ -9,8 +9,7 @@ import (
 	"github.com/nick6969/go-clean-project/internal/usecase/api/user/register"
 )
 
-type UserController struct {
-}
+type UserController struct{}
 
 func NewUserController() *UserController {
 	return &UserController{}

@@ -1,0 +1,41 @@
+## 設定 golangci-lint 說明文件
+## https://golangci-lint.run/usage/configuration/
+version: "2"
+run:
+  # 執行緒數，0 代表使用所有 CPU 核心
+  concurrency: 0
+  # 超時設定
+  timeout: 5m
+  # 在測試檔案中也執行 lint
+  tests: true
+
+linters:
+  default: none
+  enable: # 啟用的 linters 列表
+    - govet       # Go 官方的程式碼分析工具
+    - errcheck    # 檢查未處理的 error
+    - staticcheck # 一套強大的靜態分析檢查
+    - unused      # 檢查未使用的變數或函式
+    - ineffassign # 檢查無效的賦值
+    - unconvert   # 檢查不必要的類型轉換
+    - nolintlint  # 檢查 nolint 註解的使用
+    - bodyclose   # 確保 HTTP 回應的 Body 被正確關閉
+    - cyclop      # 檢查函式的圈複雜度
+
+  settings: # 各個 linter 的設定
+    cyclop:
+      max-complexity: 30  # 函式最大圈複雜度
+      package-average: 10 # 套件平均圈複雜度
+    errcheck:
+      check-type-assertions: true
+      check-blank: true
+
+issues:
+  max-issues-per-linter: 10 # 每個 linter 最多顯示 10 個問題
+  max-same-issues: 5        # 同一個問題最多顯示 5 次
+
+formatters:
+  enable:
+    - goimports # 使用 goimports 格式化輸出
+    - gofmt     # 使用 gofmt 格式化輸出
+    - gofumpt   # 使用 gofumpt 檢查程式碼格式

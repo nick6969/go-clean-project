@@ -8,8 +8,7 @@ import (
 	"github.com/nick6969/go-clean-project/internal/logger"
 )
 
-type ErrorHandler struct {
-}
+type ErrorHandler struct{}
 
 func NewErrorHandler() *ErrorHandler {
 	return &ErrorHandler{}

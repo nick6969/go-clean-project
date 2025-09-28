@@ -26,6 +26,7 @@ func (a *Auth) Execute() gin.HandlerFunc {
 		// 從 Header 中取得 token
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
+			//nolint:errcheck // 流程上只要傳進去的 error 不為 nil 就不會回傳 err
 			c.Error(domain.NewGPError(domain.ErrCodeUnauthorized).Append("Authorization header is missing"))
 			return
 		}
@@ -33,6 +34,7 @@ func (a *Auth) Execute() gin.HandlerFunc {
 		// 假設 token 格式為 "Bearer {token}"
 		parts := strings.Split(authHeader, " ")
 		if len(parts) != 2 || parts[0] != "Bearer" {
+			//nolint:errcheck // 流程上只要傳進去的 error 不為 nil 就不會回傳 err
 			c.Error(domain.NewGPError(domain.ErrCodeUnauthorized).Append("Authorization header format must be Bearer {token}"))
 			return
 		}
@@ -42,6 +44,7 @@ func (a *Auth) Execute() gin.HandlerFunc {
 		// 驗證 token
 		userID, err := a.token.ValidateAccessToken(token)
 		if err != nil {
+			//nolint:errcheck // 流程上只要傳進去的 error 不為 nil 就不會回傳 err
 			c.Error(domain.NewGPError(domain.ErrCodeUnauthorized).Append("Invalid token"))
 			return
 		}

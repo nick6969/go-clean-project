@@ -39,10 +39,16 @@ help: ## Show this help message
 # Development
 # ==============================================================================
 
-.PHONY: run dockerUp dockerDown dockerDownClean dockerLogs
+.PHONY: run lint fmt dockerUp dockerDown dockerDownClean dockerLogs
 
 run: ## Run the application
 	@go run ./cmd/api/main.go
+
+lint: ## Run linter
+	@golangci-lint run ./...
+
+fmt: ## Format code
+	@gofumpt -w .
 
 dockerUp: ## 啟動並建置 Docker 容器
 	docker compose up -d --build

@@ -58,7 +58,6 @@ func (s *Server) Shutdown() {
 	defer cancel()
 
 	err := s.server.Shutdown(ctx)
-
 	if err != nil {
 		log.Panic(err)
 	}

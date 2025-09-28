@@ -47,7 +47,7 @@ func (l *RedisLock) Unlock(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	if result.(int64) == 0 {
+	if result.(int64) == 0 { //nolint: errcheck // result 一定是 int64
 		return errors.New("unlock failed: not the lock owner")
 	}
 	return nil

@@ -23,7 +23,6 @@ func NewService(key []byte) (*Service, error) {
 	}
 
 	privatekey, err := x509.ParseECPrivateKey(block.Bytes)
-
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse EC private key: %w", err)
 	}

@@ -9,9 +9,11 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-const maxOpenConns = 25
-const maxIdleConns = 3
-const maxLiftTime = 5 * time.Minute
+const (
+	maxOpenConns = 25
+	maxIdleConns = 3
+	maxLiftTime  = 5 * time.Minute
+)
 
 type Database struct {
 	db *gorm.DB
@@ -19,7 +21,6 @@ type Database struct {
 
 func InitDatabase(dsn string, logger *slog.Logger) (*Database, error) {
 	database, err := connectDB(dsn, maxOpenConns, maxIdleConns, maxLiftTime, logger)
-
 	if err != nil {
 		return nil, err
 	}
