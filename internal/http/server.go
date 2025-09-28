@@ -25,6 +25,7 @@ type Server struct {
 func NewServer(app *application.Application) (*Server, error) {
 	engine := gin.New()
 	engine.Use(gin.Recovery())
+	engine.Use(middleware.NewMetrics().Execute())
 	engine.Use(middleware.NewRequestLogger(app.Logger).Execute())
 	engine.Use(middleware.NewInjectLogger(app.Logger).Execute())
 	engine.Use(middleware.NewErrorHandler().Execute())

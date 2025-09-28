@@ -3,6 +3,7 @@ package http
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/nick6969/go-clean-project/internal/application"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func registerRootRoutes(r gin.IRouter, app *application.Application) {
@@ -10,6 +11,8 @@ func registerRootRoutes(r gin.IRouter, app *application.Application) {
 	r.GET("health", func(ctx *gin.Context) {
 		ctx.JSON(200, gin.H{"status": "ok"})
 	})
+
+	r.GET("metrics", gin.WrapH(promhttp.Handler()))
 
 	auth := gin.BasicAuth(gin.Accounts{
 		app.Config.APIDocAuth.UserName: app.Config.APIDocAuth.Password,

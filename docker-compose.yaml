@@ -24,7 +24,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
     ports:
-      - "${LOCAL_MYSQL_PORT}:${MYSQL_PORT}"
+      - "${LOCAL_MYSQL_PORT}:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
@@ -41,13 +41,32 @@ services:
     volumes:
       - redis_data:/data
     ports:
-      - "${LOCAL_REDIS_PORT}:${REDIS_PORT}"
+      - "${LOCAL_REDIS_PORT}:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
 
+  # Prometheus
+  prometheus:
+    image: prom/prometheus:v2.47.2
+    container_name: go-clean-project-prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+  # grafana
+  grafana:
+    image: grafana/grafana:10.1.5
+    container_name: go-clean-project-grafana
+    restart: always
+    ports:
+      - "3000:3000"
+
 volumes:
   mysql_data:
   redis_data:
+
